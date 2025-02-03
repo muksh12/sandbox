@@ -8,6 +8,7 @@ variable "credentials_file" {
   default = "./web-dev-tac-service-account.json"
 }
 
+
 variable "region" {
   type    = string
   default = "northamerica-northeast1"
