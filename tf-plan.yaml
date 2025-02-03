@@ -1,0 +1,42 @@
+steps:
+# Print the name of the git branch
+- id: 'Verify Git branch and env directory match'
+  name: alpine/git
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    dir=$(ls env)
+    echo -e "Files in the git directory: \n $dir" 
+    echo "We are in Branch: $BRANCH_NAME"
+    if [ $dir == $BRANCH_NAME ]; then
+        echo -e "Directory inside env folder is ${dir} \n It matches branch name: ${BRANCH_NAME}. \n We can proceed with next stage."
+    else
+        echo "Directory: ${dir} does not match git branch: ${BRANCH_NAME}. Exiting!"
+        exit 1
+    fi
+
+# Initilaize Terraform
+- id: 'Terraform init'
+  name: 'hashicorp/terraform:1.2.9'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    cd env/${BRANCH_NAME} && pwd
+    terraform init
+      
+# Generate a Plan 
+- id: 'Terraform plan'
+  name: 'hashicorp/terraform:1.2.9'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    cd env/${BRANCH_NAME}/ && pwd
+    terraform plan
+        
+# Store Logs in a Bucket     
+logsBucket: 'gs://tf-build-logs/plan'
+options:
+    logging: GCS_ONLY
