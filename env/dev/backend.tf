@@ -4,7 +4,7 @@
 terraform {
  backend "gcs" {
    #credentials = "web-dev-tac-service-account.json"
-   bucket      = "web-dev-tac-tf-backend"
-   prefix      = "env/web-dev-tac"
+   bucket      = "tf-back"
+   prefix      = "env/dev"
  }
 }
