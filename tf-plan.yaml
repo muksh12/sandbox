@@ -37,6 +37,6 @@ steps:
     terraform plan
         
 # Store Logs in a Bucket     
-logsBucket: 'gs://tf-tac-build-logs/plan'
+logsBucket: 'gs://tf-build-logs/plan'
 options:
     logging: GCS_ONLY
