@@ -47,6 +47,6 @@ steps:
         terraform apply -auto-approve tfplan
         
 # Store Logs in a Bucket     
-logsBucket: 'gs://tf-tac-build-logs/apply'
+logsBucket: 'gs://tf-build-logs/apply'
 options:
     logging: GCS_ONLY
