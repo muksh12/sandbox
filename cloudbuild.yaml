@@ -16,7 +16,6 @@ steps:
         exit 1
     fi
 
-
 # Initilaize Terraform
 - id: 'Terraform init'
   name: 'hashicorp/terraform:1.2.9'
