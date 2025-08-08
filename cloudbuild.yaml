@@ -18,3 +18,8 @@ steps:
     - 'northamerica-northeast1'
 images:
 - 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA'
+
+# Store Logs in a Bucket     
+logsBucket: 'gs://tf-build-logs/apply'
+options:
+    logging: GCS_ONLY
