@@ -1,25 +1,75 @@
-steps:
-# Build the image
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA', '.']
-# Push the image to Artifact Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA']
-# Deploy image to Cloud Run
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
-  args: 
-    - 'run'
-    - 'deploy'
-    - 'domo01'
-    - '--image'
-    - 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA'
-    - '--region'
-    - 'northamerica-northeast1'
-images:
-- 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA'
+# steps:
+# # Build the image
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: ['build', '-t', 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA', '.']
+# # Push the image to Artifact Registry
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: ['push', 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA']
+# # Deploy image to Cloud Run
+# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+#   entrypoint: gcloud
+#   args: 
+#     - 'run'
+#     - 'deploy'
+#     - 'domo01'
+#     - '--image'
+#     - 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA'
+#     - '--region'
+#     - 'northamerica-northeast1'
+# images:
+# - 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA'
 
-# Store Logs in a Bucket     
+# # Store Logs in a Bucket     
+# logsBucket: 'gs://tf-build-logs/apply'
+# options:
+#     logging: GCS_ONLY
+
+
+steps:
+  # Build the image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA',
+      '.'
+    ]
+
+  # Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push',
+      'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA'
+    ]
+
+  # Deploy image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'domo01'
+      - '--image'
+      - 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=northamerica-northeast1'
+      - '--no-allow-unauthenticated'
+      - '--vpc-connector=rpa-prd-vpc-connector'
+      - '--vpc-egress=all-traffic'
+      - '--service-account=sandbox-22186@appspot.gserviceaccount.com'
+      - '--set-env-vars=DOMO_CLIENT_ID=486a159b-fa35-4dd7-8f75-cc85b1483243,DOMO_CLIENT_SECRET=0761b83634d6b56b7b4f047809a57481de597c980c9ad51de9293b26decc19ff,DOMO_DATASET_ID=b5d31006-c4bb-4912-b23d-124f95f4f21c,DB_HOST=127.0.0.1,DB_USER=sandbox-22186@appspot,DB_NAME=postgres,CLOUD_SQL_INSTANCE=sandbox-22186:northamerica-northeast1:anthem-01'
+      - '--timeout=3600s'
+      - '--concurrency=1'
+      - '--max-instances=1'
+      - '--memory=8Gi'
+      - '--cpu=2'
+
+# Specify the image that was built (optional )
+images:
+  - 'northamerica-northeast1-docker.pkg.dev/sandbox-22186/domo-pipeline-repo/domo-image/domo01:$COMMIT_SHA'
+
+# Store logs in a Cloud Storage bucket
 logsBucket: 'gs://tf-build-logs/apply'
+
+# Log only to GCS (suppress Cloud Console logging)
 options:
-    logging: GCS_ONLY
+  logging: GCS_ONLY
